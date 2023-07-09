@@ -1,0 +1,8 @@
+body.scanner-active {
+    --background: transparent !important;
+    --ion-background-color: transparent !important;
+}
+
+ion-content.scanner-active {
+    display: none !important;
+}
