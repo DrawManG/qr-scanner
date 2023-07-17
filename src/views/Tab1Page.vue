@@ -20,19 +20,20 @@
 .center {
   height: 100%;
   display: flex;
-  
-  
+
+
 }
+
 .fullscreen-video {
   width: 100%;
   height: 100%;
   object-fit: fill;
   display: none;
 }
+
 .hide-button {
   display: none;
 }
-
 </style>
 
 <script setup lang="ts">
@@ -47,17 +48,17 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      isScanning: false, 
+      isScanning: false,
     };
   },
   methods: {
     async startScan() {
-      this.isScanning = true; 
+      this.isScanning = true;
 
-      
+
       await BarcodeScanner.checkPermission({ force: true });
 
-      
+
       BarcodeScanner.hideBackground();
       document.querySelector('body')?.classList.add('scanner-active');
 
@@ -77,21 +78,19 @@ export default {
               throw new Error('QR-CODE не является кодом GeoReport');
             }
             const url = new URL(result.content);
-            const port = 443; 
+            const port = 443;
             url.port = port.toString();
 
             const response = await axios.get(url.toString(), {
-  headers: {
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 13; MobileApp Build/TP1A.220905.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/114.0.5735.196 Mobile Safari/537.36',
-    'Accept': 'application/json',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Host': 'georeport.ru',
-    'Referer': 'https://localhost/',
-  },
-  timeout: 5000,
-});
-
-
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 13; MobileApp Build/TP1A.220905.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/114.0.5735.196 Mobile Safari/537.36',
+                'Accept': 'application/json',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Host': 'georeport.ru',
+                'Referer': 'https://localhost/',
+              },
+              timeout: 5000,
+            });
 
             const html = response.data;
             const parser = new DOMParser();
@@ -103,32 +102,69 @@ export default {
             let parsedData = '';
             let message_alert = '';
 
-if (rows.length > 0) {
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('.table__td');
-    const label = cells[0].innerHTML.trim();
-    const value = cells[1].innerHTML.trim();
-    parsedData += `${label}: ${value}<br>`;
-  });
-  message_alert = parsedData;
-} else {
-  message_alert = 'Ошибка чтения кода';
-}
+            if (rows.length > 0) {
+              rows.forEach(row => {
+                const cells = row.querySelectorAll('.table__td');
+                const label = cells[0].innerHTML.trim();
+                const value = cells[1].innerHTML.trim();
+                parsedData += `${label}: ${value}\n`;
+              });
+              message_alert = parsedData;
+            } else {
+              message_alert = 'Ошибка чтения кода';
+            }
 
-const alert = await alertController.create({
-  header: 'QR',
-  subHeader: 'Сканированные данные',
-  message: '',
-  buttons: ['OK'],
-});
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '50%';
+            modal.style.left = '50%';
+            modal.style.transform = 'translate(-50%, -50%)';
+            modal.style.background = '#fff';
+            modal.style.padding = '20px';
+            modal.style.width = '90%';
+            modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
+            modal.style.height = '40%';
+            modal.style.maxHeight = '80%';
 
-alert.message = '';
-const messageDiv = document.createElement("pre");
-messageDiv.innerHTML = message_alert;
-alert.appendChild(messageDiv);
+            const messageDiv = document.createElement('div');
+            messageDiv.innerHTML = message_alert.replace(/\n/g, '<br>');
+            messageDiv.style.fontSize = '18px';
+            modal.appendChild(messageDiv);
 
-await alert.present();
+            const okButton = document.createElement('button');
+            okButton.innerHTML = 'OK';
 
+            okButton.classList.add('ion-button', 'ion-color');
+            okButton.style.width = '90%';
+            okButton.style.height = '15%'
+            okButton.style.position = 'absolute';
+            okButton.style.bottom = '20px';
+            okButton.style.marginTop = '20px';
+
+            okButton.classList.add('ion-color-danger');
+            okButton.classList.add('ion-color-light');
+
+            okButton.addEventListener('click', () => {
+              modal.style.display = 'none';
+            });
+            modal.appendChild(okButton);
+
+            document.body.appendChild(modal);
+            document.addEventListener('click', handleClickOutsideModal);
+            function handleClickOutsideModal(event: MouseEvent) {
+              const targetNode = event.target as Node;
+
+              if (modal.contains(targetNode)) {
+                return;
+              }
+
+              closeModal();
+            }
+
+            function closeModal() {
+              modal.style.display = 'none';
+              document.removeEventListener('click', handleClickOutsideModal);
+            }
 
           } catch (error) {
             if (error instanceof Error) {
@@ -145,7 +181,7 @@ await alert.present();
           }
         }
       } else {
-        
+
         const result = await BarcodeScanner.startScan();
 
         document.querySelector('body')?.classList.remove('scanner-active');
@@ -162,7 +198,7 @@ await alert.present();
         }
       }
 
-      this.isScanning = false; 
+      this.isScanning = false;
     }
   }
 }
