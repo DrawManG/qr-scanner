@@ -38,7 +38,7 @@ interface Item {
 const onItemClick = (item: Item) => {
   let formattedData = '';
   for (const key in item.data) {
-    formattedData += `${key} - ${item.data[key]}<br>`;
+    formattedData += `${key}: ${item.data[key]}<br>`;
   }
   modalMessage.value = formattedData;
   isModalOpen.value = true;
@@ -77,12 +77,15 @@ const closeModal = () => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #696969;
+  
   padding: 20px;
-  width: 90%;
+  width: 70%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   height: 40%;
   max-height: 80%;
+
+
+  backdrop-filter: blur(3px);
 }
 
 .modal-content {
@@ -90,12 +93,32 @@ const closeModal = () => {
 }
 
 button {
-  width: 90%;
+  width: 80%;
   height: 15%;
-  background-color: #808080;
+  border-radius: 0.8%;
+  background: #3171e0;
   position: absolute;
   bottom: 20px;
   margin-top: 20px;
   cursor: pointer;
+  border: none; 
+  left: 50%; 
+  top: 80%; 
+  transform: translate(-50%, -50%); 
+
+  transition: background 0.3s ease;
+
+  
 }
+
+
+button:hover {
+  background: #2654a8; 
+}
+
+
+button:active {
+  background: #1c3b75; 
+}
+
 </style>
