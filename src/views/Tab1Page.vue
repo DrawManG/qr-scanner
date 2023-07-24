@@ -2,13 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Tab 1</ion-title>
+        <ion-title>QR-CODE SCAN</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <div class="center">
-        <ion-button v-if="!isScanning" v-on:click="startScan">Сканировать код</ion-button>
-      </div>
+      <div class="button-container">
+  <ion-fab-button v-if="!isScanning" style="display: inline-block;vertical-align: middle !important;" v-on:click="startScan" class="round-button">
+    <span>Сканирование</span>
+  </ion-fab-button>
+</div>
       <div>
         <video class="fullscreen-video" id="videoElement" playsinline autoplay></video>
       </div>
@@ -17,12 +19,7 @@
 </template>
 
 <style scoped>
-.center {
-  height: 100%;
-  display: flex;
 
-
-}
 
 .fullscreen-video {
   width: 100%;
@@ -34,6 +31,32 @@
 .hide-button {
   display: none;
 }
+
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 100vh;
+    padding-bottom: 50px;
+  }
+  .button-container ion-fab-button.round-button {
+    width: 40vw;
+    height: 40vw;
+    border-radius: 50%;
+    background-color: #216ad8;
+    color: #e7e7e7;
+    font-size: 1.2 rch;
+    position: fixed;
+    line-height: 40vw;
+    text-align: center;
+    
+    bottom: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 2px 4px 10px #397ee6;
+  }
+
 </style>
 
 <script setup lang="ts">
@@ -65,6 +88,7 @@ export default {
 
       if (isPlatform('android')) {
         const videoElement = document.getElementById('videoElement');
+        
         videoElement.style.display = 'block';
 
         const result = await BarcodeScanner.startScan({ targetedFormats: 'QR_CODE', previewElement: videoElement });
@@ -83,7 +107,7 @@ export default {
 
             const response = await axios.get(url.toString(), {
               headers: {
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 13; MobileApp Build/TP1A.220905.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/114.0.5735.196 Mobile Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Linux; MultiOS; MobileApp Build/TP1A.220905.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/114.0.5735.196 Mobile Safari/537.36',
                 'Accept': 'application/json',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Host': 'georeport.ru',
@@ -119,7 +143,7 @@ export default {
             modal.style.top = '50%';
             modal.style.left = '50%';
             modal.style.transform = 'translate(-50%, -50%)';
-            modal.style.background = '#fff';
+            modal.style.background = '#696969;';
             modal.style.padding = '20px';
             modal.style.width = '90%';
             modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
@@ -139,6 +163,7 @@ export default {
             okButton.style.height = '15%'
             okButton.style.position = 'absolute';
             okButton.style.bottom = '20px';
+            okButton.style.backgroundColor = "#808080"
             okButton.style.marginTop = '20px';
 
             okButton.classList.add('ion-color-danger');
