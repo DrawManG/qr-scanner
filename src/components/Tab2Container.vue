@@ -1,14 +1,13 @@
 <template>
   <div>
     <div v-for="item in items" :key="item.id" class="item-container" @click="onItemClick(item)">
-  <div class="item-content">
-    <div class="item-data">
-      <span class="item-key"></span> <span class="item-value">{{ item.data.Номер }}</span>
+      <div class="item-content">
+        <div class="item-data">
+          <span class="item-key"></span> <span class="item-value">{{ item.data.Объект }}</span>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-    
     <div v-if="isModalOpen" class="modal-container">
       <div class="modal-content">
         <div v-html="modalMessage"></div>
@@ -19,21 +18,58 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue';
-import database from '@/JSON/database.json';
+import { ref, onBeforeMount, watch } from 'vue';
 
 const items = ref<Array<Item>>([]);
 const isModalOpen = ref<boolean>(false);
 const modalMessage = ref<string>('');
 
-onBeforeMount(() => {
-  items.value = database.items;
-});
+interface Data {
+  [key: string]: string | number;
+}
 
 interface Item {
   id: number;
-  data: Record<string, string | number>;
+  data: Data;
 }
+
+// Определяем интерфейс Database
+interface Database {
+  items: Item[];
+}
+
+// Переносим функцию loadFromLocalStorage из вашего предыдущего сообщения сюда
+function loadFromLocalStorage(): Database {
+  const savedData = localStorage.getItem('myAppDatabase');
+  return savedData ? JSON.parse(savedData) : { items: [] };
+}
+
+// Ваша функция для обновления данных, которую мы вызываем при изменениях в localStorage
+const updateItems = () => {
+  const database = loadFromLocalStorage();
+  items.value = database.items;
+};
+
+// Подписываемся на кастомное событие для обновления данных на текущей вкладке
+window.addEventListener('updateData', updateItems);
+
+// Событие для обновления данных в других вкладках
+const updateDataEvent = new Event('updateData');
+
+// При изменении данных вызываем обработчик события и отправляем кастомное событие на все активные вкладки
+const notifyDataChange = () => {
+  window.dispatchEvent(updateDataEvent);
+};
+
+// Добавляем обработчик события 'storage' для моментального обновления данных при изменениях в localStorage
+window.addEventListener('storage', (event) => {
+  if (event.key === 'myAppDatabase') {
+    notifyDataChange();
+  }
+});
+
+// Выполняем первоначальное обновление данных при загрузке компонента
+onBeforeMount(updateItems);
 
 const onItemClick = (item: Item) => {
   let formattedData = '';
@@ -48,6 +84,7 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 </script>
+
 
 <style>
 .item-container {
@@ -85,7 +122,7 @@ const closeModal = () => {
   max-height: 80%;
 
 
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(100px);
 }
 
 .modal-content {

@@ -5,12 +5,12 @@
         <ion-title>QR-CODE SCAN</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content :fullscreen="true">
+    <ion-content :fullscreen="true" class="fixed-content">
       <div class="button-container">
-  <ion-fab-button v-if="!isScanning" style="display: inline-block;vertical-align: middle !important;" v-on:click="startScan" class="round-button">
-    <span>Сканирование</span>
-  </ion-fab-button>
-</div>
+        <ion-fab-button v-if="!isScanning" style="display: inline-block;vertical-align: middle !important;" v-on:click="startScan" class="round-button">
+          <span>Сканирование</span>
+        </ion-fab-button>
+      </div>
       <div>
         <video class="fullscreen-video" id="videoElement" playsinline autoplay></video>
       </div>
@@ -18,14 +18,31 @@
   </ion-page>
 </template>
 
+
+
 <style scoped>
-
-
+.fixed-content {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 0%;
+    overflow: hidden;
+    background: #000;
+    z-index: 9999; 
+  }
 .fullscreen-video {
   width: 100%;
   height: 100%;
   object-fit: fill;
   display: none;
+  pointer-events: none;
 }
 
 .hide-button {
@@ -67,6 +84,7 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton } from 
 import { BarcodeScanner } from "@capacitor-community/barcode-scanner";
 import { alertController, isPlatform } from '@ionic/vue';
 import axios from 'axios';
+import databaseJson from '@/JSON/database.json';
 
 export default {
   data() {
@@ -74,11 +92,12 @@ export default {
       isScanning: false,
     };
   },
+  
   methods: {
     async startScan() {
       this.isScanning = true;
 
-
+      
       await BarcodeScanner.checkPermission({ force: true });
 
 
@@ -88,7 +107,7 @@ export default {
 
       if (isPlatform('android')) {
         const videoElement = document.getElementById('videoElement');
-        
+        // TODO Тут не нужно убирать ошибку, после устранения ошибки. код перестаёт работать 
         videoElement.style.display = 'block';
 
         const result = await BarcodeScanner.startScan({ targetedFormats: 'QR_CODE', previewElement: videoElement });
@@ -115,7 +134,41 @@ export default {
               },
               timeout: 5000,
             });
+            interface Data {
+  [key: string]: string | number;
+}
 
+interface Item {
+  id: number;
+  data: Data;
+}
+
+interface Database {
+  items: Item[];
+}
+
+function loadFromLocalStorage(): Database {
+  const savedData = localStorage.getItem('myAppDatabase');
+  return savedData ? JSON.parse(savedData) : { items: [] };
+}
+
+
+function saveToLocalStorage(data: Database): void {
+  localStorage.setItem('myAppDatabase', JSON.stringify(data));
+  const updateDataEvent = new Event('updateData');
+  window.dispatchEvent(updateDataEvent);
+}
+const database: Database = loadFromLocalStorage();
+function getMaxIdFromJson(data: Database): number {
+  let maxId = -1;
+  data.items.forEach(item => {
+    if (item.id > maxId) {
+      maxId = item.id;
+    }
+  });
+  return maxId;
+}
+const maxId = getMaxIdFromJson(database);
             const html = response.data;
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, 'text/html');
@@ -125,14 +178,25 @@ export default {
 
             let parsedData = '';
             let message_alert = '';
-
+            const newData: Data = {};
             if (rows.length > 0) {
-              rows.forEach(row => {
-                const cells = row.querySelectorAll('.table__td');
-                const label = cells[0].innerHTML.trim();
-                const value = cells[1].innerHTML.trim();
-                parsedData += `${label}: ${value}\n`;
-              });
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('.table__td');
+    const label = cells[0].innerHTML.trim();
+    const value = cells[1].innerHTML.trim();
+
+
+    newData[label] = value;
+  });
+  if (Object.keys(newData).length > 0) {
+    const newItem: Item = {
+      id: maxId + 1,
+      data: newData,
+    };
+    database.items.push(newItem);
+    saveToLocalStorage(database);
+  }
+              
               message_alert = parsedData;
             } else {
               message_alert = 'Ошибка чтения кода';
