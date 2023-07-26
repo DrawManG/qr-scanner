@@ -33,42 +33,38 @@ interface Item {
   data: Data;
 }
 
-// Определяем интерфейс Database
 interface Database {
   items: Item[];
 }
 
-// Переносим функцию loadFromLocalStorage из вашего предыдущего сообщения сюда
 function loadFromLocalStorage(): Database {
   const savedData = localStorage.getItem('myAppDatabase');
   return savedData ? JSON.parse(savedData) : { items: [] };
 }
 
-// Ваша функция для обновления данных, которую мы вызываем при изменениях в localStorage
+
 const updateItems = () => {
   const database = loadFromLocalStorage();
   items.value = database.items;
 };
 
-// Подписываемся на кастомное событие для обновления данных на текущей вкладке
+
 window.addEventListener('updateData', updateItems);
 
-// Событие для обновления данных в других вкладках
+
 const updateDataEvent = new Event('updateData');
 
-// При изменении данных вызываем обработчик события и отправляем кастомное событие на все активные вкладки
 const notifyDataChange = () => {
   window.dispatchEvent(updateDataEvent);
 };
 
-// Добавляем обработчик события 'storage' для моментального обновления данных при изменениях в localStorage
+
 window.addEventListener('storage', (event) => {
   if (event.key === 'myAppDatabase') {
     notifyDataChange();
   }
 });
 
-// Выполняем первоначальное обновление данных при загрузке компонента
 onBeforeMount(updateItems);
 
 const onItemClick = (item: Item) => {
@@ -114,7 +110,7 @@ const closeModal = () => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
+
   padding: 20px;
   width: 70%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -138,24 +134,20 @@ button {
   bottom: 20px;
   margin-top: 20px;
   cursor: pointer;
-  border: none; 
-  left: 50%; 
-  top: 80%; 
-  transform: translate(-50%, -50%); 
-
+  border: none;
+  left: 50%;
+  top: 80%;
+  transform: translate(-50%, -50%);
   transition: background 0.3s ease;
-
-  
 }
 
 
 button:hover {
-  background: #2654a8; 
+  background: #2654a8;
 }
 
 
 button:active {
-  background: #1c3b75; 
+  background: #1c3b75;
 }
-
 </style>

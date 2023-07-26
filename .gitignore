@@ -30,3 +30,9 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+ios/App/Podfile
+android/variables.gradle
+android/capacitor.settings.gradle
+android/app/capacitor.build.gradle
+android/.idea/misc.xml
+ios/App/Podfile
