@@ -1,5 +1,10 @@
 <template>
   <div>
+    <span  class="button-container">
+  <ion-fab-button style="display: inline-block; vertical-align: middle !important;" class="round-button" id="clearButton">
+    <span>Очистить</span>
+  </ion-fab-button>
+</span >
     <div v-for="item in items" :key="item.id" class="item-container" @click="onItemClick(item)">
       <div class="item-content">
         <div class="item-data">
@@ -58,6 +63,17 @@ const notifyDataChange = () => {
   window.dispatchEvent(updateDataEvent);
 };
 
+
+function handleClearButtonClick() {
+  
+  localStorage.removeItem('myAppDatabase');
+}
+
+
+window.addEventListener('load', () => {
+  const clearButton = document.getElementById('clearButton') as HTMLIonFabButtonElement;
+  clearButton.addEventListener('click', handleClearButtonClick);
+});
 
 window.addEventListener('storage', (event) => {
   if (event.key === 'myAppDatabase') {
@@ -146,4 +162,31 @@ button:hover {
 button:active {
   background: #1c3b75;
 }
+.button-container {
+  position: fixed;
+  bottom: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.button-container::after {
+  content: '';
+  display: block;
+  width: 15vw;
+  height: 15vw;
+}
+
+.button-container ion-fab-button.round-button {
+  width: 15vw;
+  height: 15vw;
+  border-radius: 50%;
+  background-color: #216ad8;
+  color: #e7e7e7;
+  font-size: 10px;
+  position: absolute;
+  bottom: 0;
+  left: 240%;
+  box-shadow: 1px 2px 10px #397ee6;
+}
+
 </style>
