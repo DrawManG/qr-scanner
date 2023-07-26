@@ -112,12 +112,10 @@ const closeModal = () => {
   transform: translate(-50%, -50%);
 
   padding: 20px;
-  width: 70%;
+  width: 80%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   height: 40%;
   max-height: 80%;
-
-
   backdrop-filter: blur(100px);
 }
 
@@ -141,11 +139,9 @@ button {
   transition: background 0.3s ease;
 }
 
-
 button:hover {
   background: #2654a8;
 }
-
 
 button:active {
   background: #1c3b75;

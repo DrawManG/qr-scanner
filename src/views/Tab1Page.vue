@@ -187,7 +187,7 @@ export default {
                 const cells = row.querySelectorAll('.table__td');
                 const label = cells[0].innerHTML.trim();
                 const value = cells[1].innerHTML.trim();
-
+                parsedData += `${label}: ${value}\n`;
 
                 newData[label] = value;
               });
@@ -206,42 +206,63 @@ export default {
             }
 
             const modal = document.createElement('div');
-            modal.style.position = 'fixed';
-            modal.style.top = '50%';
-            modal.style.left = '50%';
-            modal.style.transform = 'translate(-50%, -50%)';
-            modal.style.background = '#696969;';
-            modal.style.padding = '20px';
-            modal.style.width = '90%';
-            modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
-            modal.style.height = '40%';
-            modal.style.maxHeight = '80%';
+modal.style.position = 'fixed';
+modal.style.top = '50%';
+modal.style.left = '50%';
+modal.style.transform = 'translate(-50%, -50%)';
+modal.style.background = 'transparent';
+modal.style.padding = '20px';
+modal.style.width = '80%';
+modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
+modal.style.height = '40%';
+modal.style.maxHeight = '80%';
+modal.style.backdropFilter = 'blur(100px)';
 
-            const messageDiv = document.createElement('div');
-            messageDiv.innerHTML = message_alert.replace(/\n/g, '<br>');
-            messageDiv.style.fontSize = '18px';
-            modal.appendChild(messageDiv);
+const messageDiv = document.createElement('div');
+messageDiv.innerHTML = message_alert.replace(/\n/g, '<br>');
+messageDiv.style.fontSize = '18px';
+modal.appendChild(messageDiv);
 
-            const okButton = document.createElement('button');
-            okButton.innerHTML = 'OK';
+const okButton = document.createElement('button');
+okButton.innerHTML = 'OK';
 
-            okButton.classList.add('ion-button', 'ion-color');
-            okButton.style.width = '90%';
-            okButton.style.height = '15%'
-            okButton.style.position = 'absolute';
-            okButton.style.bottom = '20px';
-            okButton.style.backgroundColor = "#808080"
-            okButton.style.marginTop = '20px';
+okButton.classList.add('ion-button', 'ion-color');
+okButton.style.width = '90%';
+okButton.style.height = '15%';
+okButton.style.position = 'absolute';
+okButton.style.bottom = '20px';
+okButton.style.cursor = 'pointer';
+okButton.style.border = 'none';
+okButton.style.borderRadius = '0.8%';
+okButton.style.background = '#3171e0';
+okButton.style.marginTop = '20px';
+okButton.style.left = '50%';
+okButton.style.top = '80%';
+okButton.style.transform = 'translate(-50%, -50%)';
+okButton.style.transition = 'background 0.3s ease';
 
-            okButton.classList.add('ion-color-danger');
-            okButton.classList.add('ion-color-light');
+okButton.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+okButton.addEventListener('mouseover', () => {
+  okButton.style.background = '#2654a8';
+});
 
-            okButton.addEventListener('click', () => {
-              modal.style.display = 'none';
-            });
-            modal.appendChild(okButton);
+okButton.addEventListener('mousedown', () => {
+  okButton.style.background = '#1c3b75';
+});
 
-            document.body.appendChild(modal);
+okButton.addEventListener('mouseup', () => {
+  okButton.style.background = '#2654a8';
+});
+
+okButton.addEventListener('mouseleave', () => {
+  okButton.style.background = '#3171e0';
+});
+
+document.body.appendChild(modal);
+modal.appendChild(okButton);
+
             document.addEventListener('click', handleClickOutsideModal);
             function handleClickOutsideModal(event: MouseEvent) {
               const targetNode = event.target as Node;
