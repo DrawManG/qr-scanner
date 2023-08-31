@@ -66,7 +66,6 @@
   height: 40vw;
   border-radius: 50%;
   background-color: #216ad8;
-  color: #e7e7e7;
   font-size: 1.2 rch;
   position: fixed;
   line-height: 40vw;

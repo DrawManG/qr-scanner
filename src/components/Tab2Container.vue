@@ -1,10 +1,10 @@
 <template>
   <div>
-    <span  class="button-container">
-  <ion-fab-button style="display: inline-block; vertical-align: middle !important;" class="round-button" id="clearButton">
-    <span>Очистить</span>
-  </ion-fab-button>
-</span >
+    <span class="button-container">
+      <ion-fab-button style="display: inline-block; vertical-align: middle !important; margin: auto;" class="round-button" id="clearButton" @click="handleClearButtonClick">
+        <span>Очистить</span>
+      </ion-fab-button>
+    </span>
     <div v-for="item in items" :key="item.id" class="item-container" @click="onItemClick(item)">
       <div class="item-content">
         <div class="item-data">
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, watch } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 
 const items = ref<Array<Item>>([]);
 const isModalOpen = ref<boolean>(false);
@@ -65,8 +65,8 @@ const notifyDataChange = () => {
 
 
 function handleClearButtonClick() {
-  
   localStorage.removeItem('myAppDatabase');
+  items.value = []; 
 }
 
 
