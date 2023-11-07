@@ -7,8 +7,11 @@
     </span>
     <div v-for="item in items" :key="item.id" class="item-container" @click="onItemClick(item)">
       <div class="item-content">
+        
         <div class="item-data">
-          <span class="item-key"></span> <span class="item-value">{{ item.data.Объект }}</span>
+          
+          <span class="item-key"></span> <span class="item-value">{{ item.data.Объект }} </span>
+          
         </div>
       </div>
     </div>
@@ -16,18 +19,25 @@
     <div v-if="isModalOpen" class="modal-container">
       <div class="modal-content">
         <div v-html="modalMessage"></div>
-        <button @click="closeModal">OK</button>
+        <div class="container-buttons" style="padding-top: 10%;width: 100%;">
+        <button @click="closeModal" style="width: 40%; height: 50px;margin-left: 20%; ">OK</button>
+        <button @click="removeModalData()" style="width: 40%;height: 50px; margin-left: 20%; background: brown;" value="{{ item.data.Объект }}">DEL</button>
+      </div>
+      
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { data } from 'cheerio/lib/api/attributes';
+import { key } from 'ionicons/icons';
 import { ref, onBeforeMount } from 'vue';
 
 const items = ref<Array<Item>>([]);
 const isModalOpen = ref<boolean>(false);
 const modalMessage = ref<string>('');
+
 
 interface Data {
   [key: string]: string | number;
@@ -84,21 +94,37 @@ window.addEventListener('storage', (event) => {
 onBeforeMount(updateItems);
 
 const onItemClick = (item: Item) => {
+  let keySelect = '';
   let formattedData = '';
   for (const key in item.data) {
     formattedData += `${key}: ${item.data[key]}<br>`;
   }
   modalMessage.value = formattedData;
+  keySelect = key
+  
   isModalOpen.value = true;
 };
 
 const closeModal = () => {
   isModalOpen.value = false;
 };
+//position: absolute; #button
+const removeModalData = (key: string) => {
+  delete items[key as keyof typeof items];
+  isModalOpen.value = false;
+}
+
 </script>
 
 
+
 <style>
+
+.container-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
 .item-container {
   display: flex;
   justify-content: center;
@@ -144,7 +170,7 @@ button {
   height: 15%;
   border-radius: 0.8%;
   background: #3171e0;
-  position: absolute;
+  
   bottom: 20px;
   margin-top: 20px;
   cursor: pointer;
