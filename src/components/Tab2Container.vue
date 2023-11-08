@@ -21,7 +21,7 @@
         <div v-html="modalMessage"></div>
         <div class="container-buttons" style="padding-top: 10%;width: 100%;">
         <button @click="closeModal" style="width: 40%; height: 50px;margin-left: 20%; ">OK</button>
-        <button @click="removeModalData()" style="width: 40%;height: 50px; margin-left: 20%; background: brown;" value="{{ item.data.Объект }}">DEL</button>
+        <button @click="removeModalData" style="width: 40%;height: 50px; margin-left: 20%; background: brown;" value="{{ item.data.Объект }}">DEL</button>
       </div>
       
       </div>
@@ -30,14 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { data } from 'cheerio/lib/api/attributes';
-import { key } from 'ionicons/icons';
 import { ref, onBeforeMount } from 'vue';
 
-const items = ref<Array<Item>>([]);
-const isModalOpen = ref<boolean>(false);
-const modalMessage = ref<string>('');
-
+const items = ref<Item[]>([]);
+const isModalOpen = ref(false);
+const modalMessage = ref('');
 
 interface Data {
   [key: string]: string | number;
@@ -52,69 +49,61 @@ interface Database {
   items: Item[];
 }
 
+function saveToLocalStorage(data: Database): void {
+  localStorage.setItem('myAppDatabase', JSON.stringify(data));
+  notifyDataChange();
+}
+
 function loadFromLocalStorage(): Database {
   const savedData = localStorage.getItem('myAppDatabase');
   return savedData ? JSON.parse(savedData) : { items: [] };
 }
-
 
 const updateItems = () => {
   const database = loadFromLocalStorage();
   items.value = database.items;
 };
 
-
-window.addEventListener('updateData', updateItems);
-
-
-const updateDataEvent = new Event('updateData');
-
 const notifyDataChange = () => {
-  window.dispatchEvent(updateDataEvent);
+  window.dispatchEvent(new Event('updateData'));
 };
-
 
 function handleClearButtonClick() {
   localStorage.removeItem('myAppDatabase');
-  items.value = []; 
+  items.value = [];
+  notifyDataChange();
 }
 
-
-window.addEventListener('load', () => {
-  const clearButton = document.getElementById('clearButton') as HTMLIonFabButtonElement;
-  clearButton.addEventListener('click', handleClearButtonClick);
-});
-
-window.addEventListener('storage', (event) => {
-  if (event.key === 'myAppDatabase') {
-    notifyDataChange();
-  }
-});
-
-onBeforeMount(updateItems);
-
-const onItemClick = (item: Item) => {
-  let keySelect = '';
+function onItemClick(item: Item) {
   let formattedData = '';
   for (const key in item.data) {
     formattedData += `${key}: ${item.data[key]}<br>`;
   }
   modalMessage.value = formattedData;
-  keySelect = key
-  
+  selectedItem.value = item;
   isModalOpen.value = true;
-};
+}
 
-const closeModal = () => {
-  isModalOpen.value = false;
-};
-//position: absolute; #button
-const removeModalData = (key: string) => {
-  delete items[key as keyof typeof items];
+function closeModal() {
   isModalOpen.value = false;
 }
 
+const selectedItem = ref<Item | null>(null);
+
+function removeModalData() {
+  if (selectedItem.value) {
+    const updatedItems = items.value.filter((item) => item.id !== selectedItem.value.id);
+    const updatedDatabase: Database = { items: updatedItems };
+    saveToLocalStorage(updatedDatabase);
+    isModalOpen.value = false;
+  }
+}
+
+window.addEventListener('updateData', updateItems);
+
+onBeforeMount(updateItems);
 </script>
+
 
 
 
