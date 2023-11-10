@@ -1,17 +1,20 @@
 <template>
   <div>
     <span class="button-container">
-      <ion-fab-button style="display: inline-block; vertical-align: middle !important; margin: auto;" class="round-button" id="clearButton" @click="handleClearButtonClick">
-        <span>Очистить</span>
+      <ion-fab-button
+        style="display: inline-block; vertical-align: middle !important; margin: auto;"
+        class="round-button"
+        id="clearButton"
+        @click="handleClearButtonClick"
+      >
+      <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" style="width: 50%;height: 50%;" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
       </ion-fab-button>
     </span>
+    
     <div v-for="item in items" :key="item.id" class="item-container" @click="onItemClick(item)">
       <div class="item-content">
-        
         <div class="item-data">
-          
           <span class="item-key"></span> <span class="item-value">{{ item.data.Объект }} </span>
-          
         </div>
       </div>
     </div>
@@ -19,11 +22,10 @@
     <div v-if="isModalOpen" class="modal-container">
       <div class="modal-content">
         <div v-html="modalMessage"></div>
-        <div class="container-buttons" style="padding-top: 10%;width: 100%;">
-        <button @click="closeModal" style="width: 40%; height: 50px;margin-left: 20%; ">OK</button>
-        <button @click="removeModalData" style="width: 40%;height: 50px; margin-left: 20%; background: brown;" value="{{ item.data.Объект }}">DEL</button>
-      </div>
-      
+        <div class="container-buttons" style="padding-top: 10%; width: 100%;">
+          <ion-button @click="closeModal" ><svg xmlns="http://www.w3.org/2000/svg" class="ionicon" style="width: 40%; height: 50px;" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M416 128L192 384l-96-96"/></svg></ion-button>
+          <ion-button @click="removeModalData" color="danger" style="margin-left: 20%;background-color: brown;" value="{{ item.data.Объект }}"><svg xmlns="http://www.w3.org/2000/svg" class="ionicon" style="width: 40%; height: 50px;" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352"/><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg></ion-button>
+        </div>
       </div>
     </div>
   </div>
@@ -31,10 +33,11 @@
 
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
-
+import {IonIcon,IonButton,IonFabButton} from '@ionic/vue'
 const items = ref<Item[]>([]);
 const isModalOpen = ref(false);
 const modalMessage = ref('');
+const trash_icon = ref('trash-outline');
 
 interface Data {
   [key: string]: string | number;
