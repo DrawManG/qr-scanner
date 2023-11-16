@@ -6,14 +6,15 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true" class="fixed-content">
+
       <div class="button-container">
-        <ion-fab-button v-if="!isScanning" style="display: inline-block;vertical-align: middle !important;height: 80px; width: 80px; "
+        <ion-fab-button id="start_button_scan"  style="display: inline-block;vertical-align: middle !important;height: 80px; width: 80px; "
           v-on:click="startScan" class="round-button">
           <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" style="width: 50%;height: 50%;" viewBox="0 0 512 512"><path d="M350.54 148.68l-26.62-42.06C318.31 100.08 310.62 96 302 96h-92c-8.62 0-16.31 4.08-21.92 10.62l-26.62 42.06C155.85 155.23 148.62 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.65 0-16.85-4.77-22.46-11.32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="256" cy="272" r="80" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M124 158v-22h-24v22"/></svg>
         </ion-fab-button>
       </div>
-      <div>
-        <video class="fullscreen-video" id="videoElement" playsinline autoplay></video>
+      <div style="position: absolute; top: -100%; left: -100%;">
+         <video  style="width: 0%; height: 0%;" id="videoElement" playsinline autoplay></video>
       </div>
     </ion-content>
   </ion-page>
@@ -70,11 +71,28 @@
   position: fixed;
   line-height: 40vw;
   text-align: center;
-
+  background: #216ad8;
   bottom: 2%;
   left: 50%;
   transform: translateX(-50%);
   box-shadow: 2px 4px 10px #397ee6;
+}
+
+.button-container ion-fab-button.round-button-red {
+  width: 40vw;
+  height: 40vw;
+  border-radius: 50%;
+  background-color: brown;
+  font-size: 1.2 rch;
+  position: fixed;
+  --background:#5e1317 !important;
+  line-height: 40vw;
+  text-align: center;
+  background: brown;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 2px 4px 10px  rgb(255, 0, 0);
 }
 </style>
 
@@ -97,20 +115,49 @@ export default {
 
   methods: {
     async startScan() {
-      this.isScanning = true;
+      const button = document.getElementById('start_button_scan');
+      if (this.isScanning){
+        document.querySelector('body')?.classList.remove('scanner-active');
+        this.isScanning = false;
+        
+        button.style.background = 'blue';
+        button.classList.remove("round-button-red");
+        button.classList.add("round-button");
+        button.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" style="width: 50%;height: 50%;" viewBox="0 0 512 512"><path d="M350.54 148.68l-26.62-42.06C318.31 100.08 310.62 96 302 96h-92c-8.62 0-16.31 4.08-21.92 10.62l-26.62 42.06C155.85 155.23 148.62 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.65 0-16.85-4.77-22.46-11.32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="256" cy="272" r="80" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M124 158v-22h-24v22"/></svg>`;
+
+        
+        return;
+        
+      }
+
+         this.isScanning = true;
+         
+         button.style.background = 'brown';
+         button.classList.remove("round-button");
+         button.classList.add("round-button-red");
+         button.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M320 320L192 192M192 320l128-128"/></svg>`;
+         const body = document.querySelector('body');
+  if (body) {
+    body.style.background = 'transparent';
+    // Добавить класс для активации сканера
+    body.classList.add('scanner-active');
+    // Запускать сканер баркодов
+  }
 
 
       await BarcodeScanner.checkPermission({ force: true });
 
 
       BarcodeScanner.hideBackground();
-      document.querySelector('body')?.classList.add('scanner-active');
+      
+      
 
 
       if (isPlatform('android')) {
         const videoElement = document.getElementById('videoElement');
         // TODO Тут не нужно убирать ошибку, после устранения ошибки. код перестаёт работать 
-        videoElement.style.display = 'block';
+        videoElement.style.cssText = "display: block;"; 
+        videoElement.setAttribute("style", "display: block;");
 
         const result = await BarcodeScanner.startScan({ targetedFormats: 'QR_CODE', previewElement: videoElement });
 
@@ -311,6 +358,11 @@ modal.appendChild(okButton);
       }
 
       this.isScanning = false;
+      button.style.background = 'blue';
+      button.classList.remove("round-button-red");
+      button.classList.add("round-button");
+      button.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" class="ionicon" style="width: 50%;height: 50%;" viewBox="0 0 512 512"><path d="M350.54 148.68l-26.62-42.06C318.31 100.08 310.62 96 302 96h-92c-8.62 0-16.31 4.08-21.92 10.62l-26.62 42.06C155.85 155.23 148.62 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.65 0-16.85-4.77-22.46-11.32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="256" cy="272" r="80" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M124 158v-22h-24v22"/></svg>`;
+
     }
   }
 }
