@@ -1,19 +1,23 @@
-<template>
-  <ion-page>
-    <ion-header>
-      <ion-toolbar>
+<template >
+  <ion-page >
+    <ion-header >
+      <ion-toolbar  >
         <ion-title>QR-CODE SCAN</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content :fullscreen="true" class="fixed-content">
+    <ion-content :fullscreen="true" class="fixed-content"  >
 
-      <div class="button-container">
+      <div class="center" >
+        <img class="icon" id="pic_qr_aim" style="width: 50%; height: 50%;position:fixed; visibility: hidden; " src="./QR-aim.svg" alt="dots icon">
+      </div>
+
+      <div class="button-container" >
         <ion-fab-button id="start_button_scan"  style="display: inline-block;vertical-align: middle !important;height: 80px; width: 80px; "
           v-on:click="startScan" class="round-button">
           <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" style="width: 50%;height: 50%;" viewBox="0 0 512 512"><path d="M350.54 148.68l-26.62-42.06C318.31 100.08 310.62 96 302 96h-92c-8.62 0-16.31 4.08-21.92 10.62l-26.62 42.06C155.85 155.23 148.62 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.65 0-16.85-4.77-22.46-11.32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="256" cy="272" r="80" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M124 158v-22h-24v22"/></svg>
         </ion-fab-button>
       </div>
-      <div style="position: absolute; top: -100%; left: -100%;">
+      <div style="position: absolute; top: -100%; left: -100%;" >
          <video  style="width: 0%; height: 0%;" id="videoElement" playsinline autoplay></video>
       </div>
     </ion-content>
@@ -23,6 +27,20 @@
 
 
 <style scoped>
+.body{
+  overflow: 'hidden';
+}
+.aim {
+  background-image:
+    url(./icons/QR-aim.svg);
+}
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* высота экрана */
+}
+
 .fixed-content {
   position: fixed;
   width: 100%;
@@ -119,7 +137,7 @@ export default {
       if (this.isScanning){
         document.querySelector('body')?.classList.remove('scanner-active');
         this.isScanning = false;
-        
+        document.getElementById("pic_qr_aim").style.visibility = "hidden";
         button.style.background = 'blue';
         button.classList.remove("round-button-red");
         button.classList.add("round-button");
@@ -131,7 +149,7 @@ export default {
       }
 
          this.isScanning = true;
-         
+         document.getElementById("pic_qr_aim").style.visibility = "visible";
          button.style.background = 'brown';
          button.classList.remove("round-button");
          button.classList.add("round-button-red");
